@@ -5,16 +5,30 @@ import './main.js'
 
 const { EventSource, location } = globalThis
 
+let current = app
+let promise
+let resolve
+let timestamp = Date.now() + 100
+
 const hot = init()
 
 const load = async src => (await import(src)).default
 
-let current = app
-let timestamp = Date.now() + 100
+const pick = resolver => resolve = resolver
+
+export const pause = () => {
+  if (!promise) {
+    promise = new Promise(pick)
+  }
+}
+
+export const resume = () => resolve?.()
 
 hot.add([
   hot.listen(new EventSource('/hot'), message, async ({ event }) => {
     const now = Date.now()
+
+    await promise
 
     if (now > timestamp) {
       timestamp = now + 100
@@ -30,4 +44,3 @@ hot.add([
     }
   })
 ])
-

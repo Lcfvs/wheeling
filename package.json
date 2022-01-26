@@ -1,6 +1,6 @@
 {
   "name": "wheeling",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "A tiny utility to turn any event listening to an async iterator",
   "type": "module",
   "exports": {
