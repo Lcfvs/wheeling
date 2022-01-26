@@ -12,8 +12,6 @@ const { assign, create, freeze } = Object
 
 const instances = new WeakMap()
 
-const end = create(null)
-
 const frozen = (prototype = null, ...extensions) =>
   freeze(merge(prototype, ...extensions))
 
@@ -42,14 +40,14 @@ const handleEvent = function (event) {
   resolvers.push(resolvable())
 }
 
-const loop = function* () {
+const loop = function* (instance) {
   const iterators = []
 
   try {
-    while (iterators.push(run(yield))) {}
+    while (iterators.push(run(instance, yield))) {}
   } finally {
     for (const iterator of iterators) {
-      iterator.return(end)
+      iterator.return()
     }
   }
 }
@@ -79,9 +77,10 @@ const prototype = frozen(null, {
     try {
       while (true) {
         const [[promise]] = resolvers
-        const context = await Promise.race([promise, instance.promise])
+        const promises = [instances.get(this).promise, promise]
+        const context = await Promise.race(promises)
 
-        if (context === end) {
+        if (!instances.has(this)) {
           break
         }
 
@@ -116,7 +115,7 @@ const prototype = frozen(null, {
         yield task(value) ?? value
       }
     } finally {
-      iterable.return?.(end)
+      iterable.return?.()
     }
   },
   revoke () {
@@ -125,17 +124,17 @@ const prototype = frozen(null, {
     if (store) {
       const { iterator, resolve } = store
 
-      resolve(end)
-      iterator.return(end)
+      resolve()
+      iterator.return()
       instances.delete(this)
     }
   }
 })
 
-const run = iterator => {
+const run = (instance, iterator) => {
   queueMicrotask(async () => {
     for await (const context of iterator) {
-      if (context === end) {
+      if (!instances.get(instance)) {
         break
       }
     }
@@ -151,13 +150,20 @@ const listener = ({ hooks: [...hooks] = [], ...properties }) =>
   })
 
 const init = () => {
-  const iterator = loop()
   const instance = frozen(prototype)
+  const iterator = loop(instance)
   const listeners = new WeakMap()
-  const [promise, { resolve }] = resolvable()
+  const [promise, { resolve, reject }] = resolvable()
+  const store = { iterator, listeners, promise, reject, resolve }
 
-  instances.set(instance, { iterator, listeners, promise, resolve })
+  instances.set(instance, store)
   iterator.next()
+
+  promise.catch(error => {
+    instance.revoke()
+
+    throw error
+  })
 
   return instance
 }

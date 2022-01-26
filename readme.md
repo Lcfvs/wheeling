@@ -1,11 +1,11 @@
 # wheeling
 
-A tiny *flat* utility to turn any event listening to **infinite async iterator**
+A tiny **flat** utility to turn any event listening to **infinite async iterator**
 
 [Demo](https://codesandbox.io/embed/wheeling-demo-forked-95ccu?expanddevtools=1&hidenavigation=1&moduleview=1&theme=dark&view=preview)
 
 ```js
-import { init, listener, preventDefault } from 'https://ga.jspm.io/npm:wheeling@1.0.5/src/wheeling.js'
+import { init, listener, preventDefault } from 'https://ga.jspm.io/npm:wheeling@1.0.6/src/wheeling.js'
 
 const app = init()
 

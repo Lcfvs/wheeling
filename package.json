@@ -1,7 +1,7 @@
 {
   "name": "wheeling",
-  "version": "1.0.5",
-  "description": "A tiny utility to turn any event listening to an async iterator",
+  "version": "1.0.6",
+  "description": "A tiny flat utility to turn any event listening to infinite async iterator",
   "type": "module",
   "exports": {
     ".": "./src/wheeling.js",
