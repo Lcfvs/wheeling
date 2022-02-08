@@ -1,6 +1,6 @@
 {
   "name": "wheeling",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A flat utility to easily chain any number of tasks & turn any event listening to infinite async iterables",
   "type": "module",
   "exports": {

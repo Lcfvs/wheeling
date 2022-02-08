@@ -18,7 +18,7 @@ const add = (app, [...iterables]) => {
   }
 }
 
-const fork = function (app, iterable, length = 2) {
+const fork = (app, iterable, length = 2) => {
   const iterables = []
   const keys = new Set(Array.from({ length }, Object))
   const promises = new WeakMap()
