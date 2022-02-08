@@ -1,5 +1,4 @@
-import { init } from './wheeling.js'
-import message from './listeners/message.js'
+import { add, init, listen, passive, revoke, task } from './wheeling.min.js'
 import app from './app.js'
 import './main.js'
 
@@ -16,6 +15,11 @@ const load = async src => (await import(src)).default
 
 const pick = resolver => resolve = resolver
 
+const onMessage = listen(hot, new EventSource('/hot'), {
+  type: 'message',
+  passive
+})
+
 export const pause = () => {
   if (!promise) {
     promise = new Promise(pick)
@@ -24,8 +28,8 @@ export const pause = () => {
 
 export const resume = () => resolve?.()
 
-hot.add([
-  hot.listen(new EventSource('/hot'), message, async ({ event }) => {
+add(hot, [
+  task(hot, onMessage, async ({ event }) => {
     const now = Date.now()
 
     await promise
@@ -39,7 +43,7 @@ hot.add([
       const main = new URL('main.js', app)
 
       current = await load(app)
-      previous.revoke()
+      revoke(previous)
       await import(main)
     }
   })

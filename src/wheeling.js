@@ -1,209 +1,112 @@
 /**
- * @module wheeling
+ * @module wheeling/wheeling.js
  * @copyright Lcf.vs 2022
  * @licence MIT
- * @see {@link https://github.com/Lcfvs/wheeling}
- * @preserve
+ * @link https://github.com/Lcfvs/wheeling
  */
 
-let resolver
+import { cast, handleEvent, iterate, readable, writable } from './internals/core.js'
+import { reject, resolvable } from './internals/promise.js'
 
-const { assign, create, freeze } = Object
+const apps = new WeakMap()
 
-const instances = new WeakMap()
-
-const frozen = (prototype = null, ...extensions) =>
-  freeze(merge(prototype, ...extensions))
-
-const merge = (prototype = null, ...extensions) =>
-  assign(create(prototype), ...extensions)
-
-const noop = value => value
-
-const pick = (resolve, reject) =>
-  resolver = { reject, resolve }
-
-const resolvable = () =>
-  [new Promise(pick), resolver]
-
-const handleEvent = function (event) {
-  const { hooks: [...hooks] = [], resolvers } = this
-  const [, { resolve }] = resolvers.at(-1)
-  const [promise, resolver] = resolvable()
-  let returned
-
-  for (const hook of hooks) {
-    returned = hook(event, promise) ?? returned
-  }
-
-  resolve(merge(null, { event }, returned && resolver))
-  resolvers.push(resolvable())
-}
-
-const loop = function* (instance) {
-  const iterators = []
-
-  try {
-    while (iterators.push(run(instance, yield))) {}
-  } finally {
-    for (const iterator of iterators) {
-      iterator.return()
-    }
+const add = (app, [...iterables]) => {
+  for (const iterable of iterables) {
+    queueMicrotask(async () => {
+      for await (const value of iterable) {}
+    })
   }
 }
 
-const prototype = frozen(null, {
-  async* listen (target, listener, task = noop) {
-    const { capture, once, passive, type } = listener
-    const options = { capture, once, passive }
-    const resolvers = [resolvable()]
-    const clone = frozen(listener, { handleEvent, resolvers })
-    const instance = instances.get(this)
-    const { listeners } = instance
+const fork = function (app, iterable, length = 2) {
+  const iterables = []
+  const keys = new Set(Array.from({ length }, Object))
+  const promises = new WeakMap()
+  const reader = cast(iterable)
 
-    if (!listeners.has(listener)) {
-      listeners.set(listener, new WeakSet())
-    }
-
-    const targets = listeners.get(listener)
-
-    if (targets.has(target)) {
-      throw new Error('Duplicate event listening')
-    }
-
-    targets.add(target)
-    target.addEventListener(type, clone, options)
-
-    try {
-      while (true) {
-        const [[promise]] = resolvers
-        const promises = [instances.get(this).promise, promise]
-        const context = await Promise.race(promises)
-
-        if (!instances.has(this)) {
-          break
-        }
-
-        yield (await task(context)) ?? context
-        resolvers.shift()
-
-        if (!resolvers.length) {
-          resolvers.push(resolvable())
-        }
-
-        if (once) {
-          break
-        }
-      }
-    } finally {
-      target.removeEventListener(type, clone, options)
-      targets.delete(target)
-    }
-  },
-  add ([...iterators]) {
-    const { iterator } = instances.get(this)
-
-    for (const current of iterators) {
-      iterator.next(current)
-    }
-
-    return this
-  },
-  async* of (iterable, task = noop) {
-    try {
-      for await (const value of iterable) {
-        yield task(value) ?? value
-      }
-    } finally {
-      iterable.return?.()
-    }
-  },
-  revoke () {
-    const store = instances.get(this)
-
-    if (store) {
-      const { iterator, resolve } = store
-
-      resolve()
-      iterator.return()
-      instances.delete(this)
-    }
+  for (const key of keys) {
+    promises.set(key, [])
+    iterables.push(iterate(app, promises, keys, key, reader))
   }
-})
 
-const run = (instance, iterator) => {
-  queueMicrotask(async () => {
-    for await (const context of iterator) {
-      if (!instances.get(instance)) {
-        break
-      }
-    }
-  })
-
-  return iterator
+  return iterables
 }
-
-const listener = ({ hooks: [...hooks] = [], ...properties }) =>
-  frozen(null, {
-    hooks: freeze(hooks),
-    ...properties
-  })
 
 const init = () => {
-  const instance = frozen(prototype)
-  const iterator = loop(instance)
-  const listeners = new WeakMap()
-  const [promise, { resolve, reject }] = resolvable()
-  const store = { iterator, listeners, promise, reject, resolve }
+  const app = resolvable()
 
-  instances.set(instance, store)
-  iterator.next()
+  apps.set(app, new WeakMap())
 
-  promise.catch(error => {
-    instance.revoke()
-
-    throw error
-  })
-
-  return instance
+  return app
 }
 
-const awaitUntil = (event, promise) => {
-  event.waitUntil(promise)
+const io = app => {
+  const promises = [resolvable(), resolvable()]
+  const input = writable(app, promises)
+  const output = readable(app, promises)
 
-  return promise
+  input.next()
+
+  return [input, output]
 }
 
-const preventDefault = event =>
-  event.preventDefault()
+const listen = async function* (app, target, listener) {
+  const listeners = apps.get(app)
 
-const respondWith = (event, promise) => {
-  event.respondWith(promise)
+  if (!listeners.has(target)) {
+    listeners.set(target, new WeakMap())
+  }
 
-  return promise
+  const handlers = listeners.get(target)
+
+  if (handlers.has(listener)) {
+    throw new Error('Duplicate event listening')
+  }
+
+  const { hooks: [...hooks] = [], type, ...options } = listener
+  const ref = new WeakRef(target)
+  const [input, output] = io(app)
+  const forget = () => {
+    ref.deref()?.removeEventListener(type, handler, options)
+    handlers.delete(listener)
+    input.return()
+  }
+  const registry = new FinalizationRegistry(forget)
+  const handler = { forget, input, handleEvent, hooks, options }
+
+  registry.register(target, null)
+  handlers.set(listener, handler)
+  target.addEventListener(type, handler, options)
+
+  try {
+    yield * output
+  } finally {
+    forget()
+  }
 }
 
-const stopImmediatePropagation = event =>
-  event.stopImmediatePropagation()
+const task = async function* (app, iterable, task) {
+  const [iterator] = fork(app, iterable, 1)
 
-const stopPropagation = event =>
-  event.stopPropagation()
+  for await (const value of iterator) {
+    yield task(value) ?? value
+  }
+}
 
-const capture = true
+const revoke = app => {
+  reject(app)
+  apps.delete(app)
+}
 
-const once = true
-
-const passive = true
+export * from './hooks.js'
+export * from './options.js'
 
 export {
-  listener,
+  add,
+  fork,
   init,
-  awaitUntil,
-  preventDefault,
-  respondWith,
-  stopImmediatePropagation,
-  stopPropagation,
-  capture,
-  once,
-  passive
+  io,
+  listen,
+  revoke,
+  task
 }

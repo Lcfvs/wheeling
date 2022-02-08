@@ -1,3 +1,3 @@
-import { init } from './wheeling.js'
+import { init } from './wheeling.min.js'
 
 export default init()
