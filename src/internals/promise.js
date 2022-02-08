@@ -25,7 +25,7 @@ const resolvable = () => {
 }
 
 const resolver = (promise, key) => {
-  const value = resolvers.get(promise)[key]
+  const value = resolvers.get(promise)?.[key]
 
   resolvers.delete(promise)
 
@@ -33,10 +33,10 @@ const resolver = (promise, key) => {
 }
 
 const resolve = (promise, value) =>
-  resolver(promise, 0)(value)
+  resolver(promise, 0)?.(value)
 
 const reject = (promise, error) =>
-  resolver(promise, 1)(error)
+  resolver(promise, 1)?.(error)
 
 const pending = async promise => {
   const pending = {}
