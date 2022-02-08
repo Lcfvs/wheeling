@@ -1,5 +1,5 @@
 import { add, init, listen, passive, revoke, task } from './wheeling.min.js'
-import app from './app.js'
+import { app } from './app.js'
 import './main.js'
 
 const { EventSource, location } = globalThis
@@ -10,8 +10,6 @@ let resolve
 let timestamp = Date.now() + 100
 
 const hot = init()
-
-const load = async src => (await import(src)).default
 
 const pick = resolver => resolve = resolver
 
@@ -42,7 +40,7 @@ add(hot, [
       const app = new URL(data, location)
       const main = new URL('main.js', app)
 
-      current = await load(app)
+      current = (await import(main)).app
       revoke(previous)
       await import(main)
     }

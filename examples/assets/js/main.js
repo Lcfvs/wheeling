@@ -1,5 +1,5 @@
 import { add, listen, preventDefault, task } from './wheeling.min.js'
-import app from './app.js'
+import { app } from './app.js'
 
 const { document } = globalThis
 

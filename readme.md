@@ -24,7 +24,7 @@ A **flat** utility to easily chain any number of tasks & turn any event listenin
 // app.js
 import { init } from 'wheeling'
 
-export default init()
+export const app = init()
 ```
 
 
@@ -32,10 +32,10 @@ export default init()
 
 ```js
 import { task } from 'wheeling'
-import app from './app.js'
+import { app } from './app.js'
 
 // logs every value
-export default task(app, [1, 2, 3], console.log)
+export const logger = task(app, [1, 2, 3], console.log)
 ```
 
 
@@ -43,12 +43,12 @@ export default task(app, [1, 2, 3], console.log)
 
 ```js
 import { fork, task } from 'wheeling'
-import app from './app.js'
+import { app } from './app.js'
 
 const logger = task(app, [4, 5, 6], console.log)
 
 // logs every value... twice!
-export default fork(app, logger, 2)
+export const forks = fork(app, logger, 2)
 ```
 
 
@@ -56,12 +56,12 @@ export default fork(app, logger, 2)
 
 ```js
 import { io, task } from 'wheeling'
-import app from './app.js'
+import { app } from './app.js'
 
 const [input, output] = io(app)
 
 // logs every value
-export default task(app, output, console.log)
+export const reader = task(app, output, console.log)
 
 queueMicrotask(async () => {
   await input.next(7)
@@ -76,7 +76,7 @@ queueMicrotask(async () => {
 
 ```js
 import { listen, preventDefault, task } from 'wheeling'
-import app from './app.js'
+import { app } from './app.js'
 
 const onClick = listen(app, document.body, {
   type: 'click',
@@ -85,10 +85,8 @@ const onClick = listen(app, document.body, {
   ]
 })
 
-add(app, [
-  // logs every { event: click }
-  task(app, onClick, console.log)
-])
+// logs every { event: click }
+export const logOnClick = task(app, onClick, console.log)
 ```
 
 
@@ -96,17 +94,17 @@ add(app, [
 
 ```js
 import { add } from 'wheeling'
-import app from './app.js'
-import task from './task.js'
-import forks from './forks.js'
-import output from './output.js'
-import listener from './listener.js'
+import { app } from './app.js'
+import { logger } from './logger.js'
+import { forks } from './forks.js'
+import { reader } from './reader.js'
+import { logOnClick } from './logOnClick.js'
 
 add(app, [
-  task,
+  logger,
   ...forks,
-  output,
-  listener
+  reader,
+  logOnClick
 ])
 ```
 
@@ -115,7 +113,7 @@ add(app, [
 
 ```js
 import { revoke } from 'wheeling'
-import app from './app.js'
+import { app } from './app.js'
 
 // stops all the iterators registered for that app
 revoke(app)
