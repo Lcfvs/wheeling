@@ -6,16 +6,26 @@
  */
 
 import { cast, handleEvent, iterate, readable, writable } from './internals/core.js'
-import { reject, resolvable } from './internals/promise.js'
+import { reject, resolvable, resolve } from './internals/promise.js'
 
 const apps = new WeakMap()
 
-const add = (app, [...iterables]) => {
+const add = async (app, [...iterables]) => {
+  const promises = []
+
   for (const iterable of iterables) {
+    const promise = resolvable()
+
+    promises.push(promise)
+
     queueMicrotask(async () => {
       for await (const value of iterable) {}
     })
+
+    queueMicrotask(() => resolve(promise))
   }
+
+  await Promise.all(promises)
 }
 
 const fork = (app, iterable, length = 2) => {

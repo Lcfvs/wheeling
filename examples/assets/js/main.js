@@ -15,7 +15,7 @@ const onClick = listen(app, document, {
 })
 
 // adds any number of iterators to the app, creating an infinite async loop for each of them
-add(app, [
+await add(app, [
   basicLog,
   // logs on every { event: click }
   task(app, onClick, console.log)

@@ -100,7 +100,7 @@ import { forks } from './forks.js'
 import { reader } from './reader.js'
 import { logOnClick } from './logOnClick.js'
 
-add(app, [
+await add(app, [
   logger,
   ...forks,
   reader,
@@ -127,7 +127,7 @@ revoke(app)
 Initialises an app, returning its promise used for every library functions 
 
 
-### <a name="api-add">`add(app, [...iterables])`</a>
+### <a name="api-add">`async add(app, [...iterables])`</a>
 
 Runs any number of provided iterables
 
