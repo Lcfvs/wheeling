@@ -155,7 +155,7 @@ The listener must be an object containing
   * `type`: **MANDATORY*** the event type
   * `...options`: see [options](#options)
 
-Yields an object like this: `{ event }`
+Yields an object like this: `{ event, target }`, where the `target` is `event.currentTarget ?? event.target`
 
 Additionally, it can have `{ reject, resolve }` if any listener [hooks](#hooks) returns a **thenable** object, like a promise
 (Mostly useful for the `ServiceWorker`)

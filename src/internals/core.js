@@ -15,6 +15,7 @@ const cast = async function* (iterable) {
 const handleEvent = async function (event) {
   const { forget, hooks, input, options } = this
   const { once } = options
+  const target = event.currentTarget ?? event.target
   const promise = resolvable()
   let returned
 
@@ -27,14 +28,14 @@ const handleEvent = async function (event) {
   }
 
   if (returned !== promise) {
-    await input.next({ event })
+    await input.next({ event, target })
 
     return
   }
 
   const [resolve, reject] = resolver(promise)
 
-  await input.next({ event, resolve, reject })
+  await input.next({ event, resolve, reject, target })
 }
 
 const iterate = async function* (app, promises, keys, key, reader) {
