@@ -19,10 +19,16 @@ const add = async (app, [...iterables]) => {
     promises.push(promise)
 
     queueMicrotask(async () => {
-      for await (const value of iterable) {}
-    })
+      while (true) {
+        const current = iterable.next()
 
-    queueMicrotask(() => resolve(promise))
+        resolve(promise)
+
+        if ((await current).done) {
+          break
+        }
+      }
+    })
   }
 
   await Promise.all(promises)
