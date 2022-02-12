@@ -2,7 +2,7 @@
  * @module wheeling/@types
  * @copyright Lcf.vs 2022
  * @licence MIT
- * @link https://github.com/Lcfvs/wheeling/blob/master/@types.js
+ * @link https://github.com/Lcfvs/wheeling/blob/master/@types/types.js
  */
 
 /**

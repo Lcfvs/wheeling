@@ -2,7 +2,9 @@
 
 A **flat** utility to easily chain any number of tasks & turn any event listening to **infinite async iterables**
 
-[Demo](https://codesandbox.io/embed/wheeling-demo-bysvo?expanddevtools=1&fontsize=14&hidenavigation=1&module=%2Fassets%2Fjs%2Fmain.js&moduleview=1&theme=dark)
+[Demo](https://wheeling.glitch.me/)
+
+[Demo sources](https://glitch.com/edit/#!/wheeling?path=assets/js/main.js)
 
 
 ## <a name="install">Install</a>
