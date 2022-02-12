@@ -1,3 +1,3 @@
-import { init } from './wheeling.min.js'
+import init from 'wheeling/init'
 
 export const app = init()

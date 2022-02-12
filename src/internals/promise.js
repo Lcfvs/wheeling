@@ -1,9 +1,9 @@
 /**
- * @module wheeling
+ * @module wheeling/internals/promise
  * @copyright Lcf.vs 2022
  * @licence MIT
- * @link https://github.com/Lcfvs/wheeling
- * @preserve
+ * @link https://github.com/Lcfvs/wheeling/blob/master/src/internals/promise.js
+ * @internal
  */
 
 const memo = []
@@ -38,10 +38,10 @@ const resolve = (promise, value) =>
 const reject = (promise, error) =>
   resolver(promise, 1)?.(error)
 
-const pending = async promise => {
+const pending = async (...promises) => {
   const pending = {}
 
-  return (await race(promise, pending)) === pending
+  return (await race(...promises, pending)) === pending
 }
 
 export {

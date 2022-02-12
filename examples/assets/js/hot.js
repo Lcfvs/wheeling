@@ -1,4 +1,9 @@
-import { add, init, listen, passive, revoke, task } from './wheeling.min.js'
+import add from 'wheeling/add'
+import init from 'wheeling/init'
+import listen from 'wheeling/listen'
+import revoke from 'wheeling/revoke'
+import task from 'wheeling/task'
+import passive from 'wheeling/options/passive'
 import { app } from './app.js'
 import './main.js'
 

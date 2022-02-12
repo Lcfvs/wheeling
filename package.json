@@ -1,13 +1,28 @@
 {
   "name": "wheeling",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "A flat utility to easily chain any number of tasks & turn any event listening to infinite async iterables",
   "type": "module",
   "exports": {
-    ".": "./dist/wheeling.min.js",
-    "./hooks.js": "./src/hooks.js",
-    "./options.js": "./src/options.js",
-    "./wheeling.js": "./src/wheeling.js"
+    ".": "./src/wheeling.js",
+    "./dist": "./dist/wheeling.min.js",
+    "./add": "./src/add.js",
+    "./fork": "./src/fork.js",
+    "./init": "./src/init.js",
+    "./io": "./src/io.js",
+    "./listen": "./src/listen.js",
+    "./revoke": "./src/revoke.js",
+    "./task": "./src/task.js",
+    "./hooks": "./src/hooks/hooks.js",
+    "./hooks/awaitUntil": "./src/hooks/awaitUntil.js",
+    "./hooks/preventDefault": "./src/hooks/preventDefault.js",
+    "./hooks/respondWith": "./src/hooks/respondWith.js",
+    "./hooks/stopImmediatePropagation": "./src/hooks/stopImmediatePropagation.js",
+    "./hooks/stopPropagation": "./src/hooks/stopPropagation.js",
+    "./options": "./src/options/options.js",
+    "./options/capture": "./src/options/capture.js",
+    "./options/once": "./src/options/once.js",
+    "./options/passive": "./src/options/passive.js"
   },
   "scripts": {
     "bundle": "rollup -c",

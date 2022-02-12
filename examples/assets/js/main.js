@@ -1,4 +1,7 @@
-import { add, listen, preventDefault, task } from './wheeling.min.js'
+import add from 'wheeling/add'
+import listen from 'wheeling/listen'
+import task from 'wheeling/task'
+import preventDefault from 'wheeling/hooks/preventDefault'
 import { app } from './app.js'
 
 const { document } = globalThis

@@ -21,8 +21,8 @@ A **flat** utility to easily chain any number of tasks & turn any event listenin
 ### <a name="examples--app-initilization">App initialization</a>
 
 ```js
-// app.js
-import { init } from 'wheeling'
+// apps.js
+import init from 'wheeling/init'
 
 export const app = init()
 ```
@@ -31,8 +31,8 @@ export const app = init()
 ### <a name="examples--create-a-task-on-an-iterable">Create a task on an iterable</a>
 
 ```js
-import { task } from 'wheeling'
-import { app } from './app.js'
+import task from 'wheeling/task'
+import { app } from './apps.js'
 
 // logs every value
 export const logger = task(app, [1, 2, 3], console.log)
@@ -42,8 +42,9 @@ export const logger = task(app, [1, 2, 3], console.log)
 ### <a name="examples--create-any-forks-of-an-iterable">Create any forks of an iterable</a>
 
 ```js
-import { fork, task } from 'wheeling'
-import { app } from './app.js'
+import fork from 'wheeling/fork'
+import task from 'wheeling/task'
+import { app } from './apps.js'
 
 const logger = task(app, [4, 5, 6], console.log)
 
@@ -55,8 +56,9 @@ export const forks = fork(app, logger, 2)
 ### <a name="examples--create-an-input-output">Create an input/output</a>
 
 ```js
-import { io, task } from 'wheeling'
-import { app } from './app.js'
+import io from 'wheeling/io'
+import task from 'wheeling/task'
+import { app } from './apps.js'
 
 const [input, output] = io(app)
 
@@ -75,8 +77,10 @@ queueMicrotask(async () => {
 ### <a name="examples--create-an-iterable-listener">Create an iterable listener</a>
 
 ```js
-import { listen, preventDefault, task } from 'wheeling'
-import { app } from './app.js'
+import listen from 'wheeling/listen'
+import preventDefault from 'wheeling/hooks/preventDefault'
+import task from 'wheeling/task'
+import { app } from './apps.js'
 
 const onClick = listen(app, document.body, {
   type: 'click',
@@ -93,8 +97,8 @@ export const logOnClick = task(app, onClick, console.log)
 ### <a name="examples--autorun-the-iterables">Autorun the iterables</a>
 
 ```js
-import { add } from 'wheeling'
-import { app } from './app.js'
+import add from 'wheeling/add'
+import { app } from './apps.js'
 import { logger } from './logger.js'
 import { forks } from './forks.js'
 import { reader } from './reader.js'
@@ -112,8 +116,8 @@ await add(app, [
 ### <a name="examples--revoke-an-app">Revoke an app</a>
 
 ```js
-import { revoke } from 'wheeling'
-import { app } from './app.js'
+import revoke from 'wheeling/revoke'
+import { app } from './apps.js'
 
 // stops all the iterators registered for that app
 revoke(app)
@@ -122,29 +126,41 @@ revoke(app)
 
 ## <a name="api">API</a>
 
-### <a name="api-init">`app = init()`</a>
+### <a name="wheeling">`wheeling` / `wheeling/dist`</a>
+
+#### <a name="api-init">`wheeling/init`</a>
+
+`app = init()`
 
 Initialises an app, returning its promise used for every library functions 
 
 
-### <a name="api-add">`async add(app, [...iterables])`</a>
+#### <a name="api-add">`wheeling/add`</a>
+
+`async add(app, [...iterables])`
 
 Runs any number of provided iterables
 
 
-### <a name="api-fork">`iterables = fork(app, iterable, length = 2)`</a>
+#### <a name="api-fork">`wheeling/fork`</a>
+
+`iterables = fork(app, iterable, length = 2)`
 
 Returns an array of iterables reading the provided one
 
 
-### <a name="api-io">`[input, output] = io(app)`</a>
+#### <a name="api-io">`wheeling/io`</a>
+
+`[input, output] = io(app)`
 
 Returns an array containing
   * `input`: an iterable used to write to the output one
   * `output`: an iterable used to read the input one
 
 
-### <a name="api-listen">`iterable = listen(app, target, listener)`</a>
+#### <a name="api-listen">`wheeling/listen`</a>
+
+`iterable = listen(app, target, listener)`
 
 Returns an iterable listening an event type
 
@@ -161,25 +177,25 @@ Additionally, it can have `{ reject, resolve }` if any listener [hooks](#hooks) 
 (Mostly useful for the `ServiceWorker`)
 
 
-### <a name="api-revoke">`revoke(app)`</a>
+#### <a name="api-revoke">`revoke(app)`</a>
 
 Stops all the added iterables and the app itself
 (Mostly useful to launch a new version of the app)
 
 
-## <a name="hooks">Hooks</a>
+### <a name="hooks">`wheeling/hooks`</a>
 
-* <a name=#hooks-awaitUntil>`awaitUntil`</a>
-* <a name=#hooks-preventDefault>`preventDefault`</a>
-* <a name=#hooks-respondWith>`respondWith`</a>
-* <a name=#hooks-stopImmediatePropagation>`stopImmediatePropagation`</a>
-* <a name=#hooks-stopPropagation>`stopPropagation`</a>
+* <a name=#hooks-awaitUntil>`wheeling/hooks/awaitUntil`</a>
+* <a name=#hooks-preventDefault>`wheeling/hooks/preventDefault`</a>
+* <a name=#hooks-respondWith>`wheeling/hooks/respondWith`</a>
+* <a name=#hooks-stopImmediatePropagation>`wheeling/hooks/stopImmediatePropagation`</a>
+* <a name=#hooks-stopPropagation>`wheeling/hooks/stopPropagation`</a>
 
-## <a name="options">Options</a>
+### <a name="options">`wheeling/options`</a>
 
-* <a name=#options-capture>`capture = true`</a>
-* <a name=#options-once>`once = true`</a>
-* <a name=#options-passive>`passive = true`</a>
+* <a name=#options-capture>`wheeling/options/capture`</a>
+* <a name=#options-once>`wheeling/options/once`</a>
+* <a name=#options-passive>`wheeling/options/passive`</a>
 
 
 ## <a name="license">License</a>

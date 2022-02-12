@@ -3,15 +3,21 @@ import { terser } from 'rollup-plugin-terser'
 const banner = `
 /**
  * @preserve
- * @module wheeling
+ * @module wheeling/dist
  * @copyright Lcf.vs 2022
  * @licence MIT
- * @link https://github.com/Lcfvs/wheeling
+ * @link https://github.com/Lcfvs/wheeling/blob/master/dist/wheeling.min.js
  */
 `
 
-const config = {
+export default {
   input: `src/wheeling.js`,
+  output: {
+    banner,
+    file: `dist/wheeling.min.js`,
+    format: 'es',
+    sourcemap: true
+  },
   plugins: [
     terser({
       compress: {
@@ -31,26 +37,3 @@ const config = {
   ],
   treeshake: false
 }
-
-const output = {
-  banner,
-  format: 'es',
-  sourcemap: true
-}
-
-export default [
-  {
-    ...config,
-    output: {
-      ...output,
-      file: `dist/wheeling.min.js`,
-    }
-  },
-  {
-    ...config,
-    output: {
-      ...output,
-      file: `examples/assets/js/wheeling.min.js`,
-    }
-  }
-]
