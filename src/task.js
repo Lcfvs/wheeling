@@ -7,6 +7,7 @@
 
 import fork from './fork.js'
 import wrap from './internals/wrap.js'
+import skip from './skip.js'
 
 /**
  * @param {app} app
@@ -18,6 +19,12 @@ export default wrap(async function* (app, iterable, task) {
   const [iterator] = fork(app, iterable, 1)
 
   for await (const value of iterator) {
-    yield task(value) ?? value
+    try {
+      yield task(value) ?? value
+    } catch (error) {
+      if (error !== skip) {
+        throw error
+      }
+    }
   }
 })

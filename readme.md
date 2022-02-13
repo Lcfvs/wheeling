@@ -41,6 +41,24 @@ export const logger = task(app, [1, 2, 3], console.log)
 ```
 
 
+### <a name="examples--create-a-skippable-task">Create a skippable task</a>
+
+```js
+import skip from 'wheeling/skip'
+import task from 'wheeling/task'
+import { app } from './apps.js'
+
+// logs every value, except the 2
+export const logger = task(app, [1, 2, 3], value => {
+  if (value === 2) {
+    throw skip
+  }
+  
+  console.log(value)
+})
+```
+
+
 ### <a name="examples--create-any-forks-of-an-iterable">Create any forks of an iterable</a>
 
 ```js

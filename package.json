@@ -1,6 +1,6 @@
 {
   "name": "wheeling",
-  "version": "3.0.4",
+  "version": "3.1.0",
   "description": "A flat utility to easily chain any number of tasks & turn any event listening to infinite async iterables",
   "type": "module",
   "exports": {
@@ -12,6 +12,7 @@
     "./io": "./src/io.js",
     "./listen": "./src/listen.js",
     "./revoke": "./src/revoke.js",
+    "./skip": "./src/skip.js",
     "./task": "./src/task.js",
     "./hooks": "./src/hooks/hooks.js",
     "./hooks/awaitUntil": "./src/hooks/awaitUntil.js",
