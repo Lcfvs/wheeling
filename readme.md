@@ -211,11 +211,17 @@ Stops all the added iterables and the app itself
 * <a name=#hooks-stopImmediatePropagation>`wheeling/hooks/stopImmediatePropagation`</a>
 * <a name=#hooks-stopPropagation>`wheeling/hooks/stopPropagation`</a>
 
+
 ### <a name="options">`wheeling/options`</a>
 
 * <a name=#options-capture>`wheeling/options/capture`</a>
 * <a name=#options-once>`wheeling/options/once`</a>
 * <a name=#options-passive>`wheeling/options/passive`</a>
+
+
+### <a name="skip">`wheeling/skip`</a>
+
+An error to `throw` into a task, to skip an iteration
 
 
 ## <a name="license">License</a>
